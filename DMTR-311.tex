@@ -48,15 +48,28 @@ The report for the previous version can be found in \citedsp{DMTR-281}.
 
 \maketitle
 
-In this Report, we characterize the performance of the Rubin Observatory Science Pipelines Version 21.0.0. We illustrate the performance via metrics that are measured on the HSC-RC2 dataset. RC2 consists of 3 tracts of data taken from the HSC-SSP survey, and selected to provide a means of testing various ``pathological'' cases (e.g., difficult astrometric solutions, seeing too small to provide a well-sampled PSF, difficult fields for deblending, and large galaxies, among others). These three tracts each contain between 112--149 visits split between the HSC-G, HSC-R, HSC-I, HSC-Z, and HSC-Y (\emph{grizy}) filters. The validate\_drp scripts were run on these tracts to derive the photometric, astrometric, and shape metrics that are reported here. We exclude the three astrometry metrics (AM3, AD3, and AF3) that concern residuals on 200-arcminute scales, since neither the handful of CCDs in the validation\_data\_hsc dataset nor the individual tracts of RC2 span large enough spatial scales to enable these measurements. 
+In this Report, we characterize the performance of the Rubin Observatory Science Pipelines Version 22.0.0. We illustrate the performance via metrics that are measured on the HSC-RC2 dataset. RC2 consists of 3 tracts of data taken from the HSC-SSP survey, and selected to provide a means of testing various ``pathological'' cases (e.g., difficult astrometric solutions, seeing too small to provide a well-sampled PSF, difficult fields for deblending, and large galaxies, among others). These three tracts each contain between 112--149 visits split between the HSC-G, HSC-R, HSC-I, HSC-Z, and HSC-Y (\emph{grizy}) filters. 
+
+Beginning in March 2021, the metrics calculation package \texttt{validate\_drp} was deprecated and replaced with \texttt{faro}, a new package built to use the Gen3 butler, and that is part of the standard science pipeline builds. Henceforth \texttt{faro} will be the tool we use to measure data quality metrics for Rubin Observatory. Before adopting \texttt{faro}, detailed verification was performed to confirm that, given the same input datasets and configuration parameters, \texttt{faro} and \texttt{validate\_drp} produce identical results. Once this parity was demonstrated, \texttt{faro} was adopted and will now evolve (i.e., it will no longer be expected to produce identical results to those from \texttt{validate\_drp}).
+
+The metric calculation pipelines from \texttt{faro} were run on the RC2 tracts to derive the photometric, astrometric, and shape metrics that are reported here. We exclude the three astrometry metrics (AM3 and AF3) that concern residuals on 200-arcminute scales, since neither the handful of CCDs in the validation\_data\_hsc dataset nor the individual tracts of RC2 span large enough spatial scales to enable these measurements. 
 
 For comparison, we provide the \SRD required ``design'' value of each metric as defined in the Science Requirements Document \citedsp{LPM-17}.
 %, and, where available, the target for this release as defined in the Data Management Development Milestone Roadmap \citedsp{LDM-240}. 
 For context, the \SRD does not place any constraints on \emph{y}-band for these Key Performance Metrics (KPMs).  For the photometric metrics, there are only specifications for \emph{g}, \emph{r}, and \emph{i}'. In the case of the ellipticity correlation metrics, there are specs only for \emph{r} and \emph{i}'. The \emph{y}-band measurements are of interest primarily for historical tracking.
 
-Some KPMs (AF1, AD1) involve thresholds that are different for ``design'', ``minimum'', and ``stretch'' specifications. The metrics in this report are all compared to the ``design'' thresholds. The assessment of these KPMs would be different if evaluated against different thresholds.
+Some KPMs (e.g., PF1, AF1, AF2) involve thresholds that are different for ``design'', ``minimum'', and ``stretch'' specifications. The metrics in this report are all compared to the ``design'' thresholds. The assessment of these KPMs would be different if evaluated against different thresholds.
 
 %The per-cycle target numbers come from the ``KPMs'' sheet of \href{http://ls.st/LDM-240}{LDM-240}.
+
+\section{Updated algorithms}
+
+Since the previous (v21.0.0) Science Pipelines release, we have engaged in detailed review of the science quality metrics and algorithms to calculate them. In response to this review, we have updated some of the metric calculation algorithms to reflect our current understanding of their intent.
+
+PA1, PF1:
+
+TE1, TE2:
+
 
 \section{Summary of performance metrics}
 
@@ -71,9 +84,10 @@ Things to note:
 
 \begin{itemize}
     \item Describe new algorithms for calculating PA1, PF1.
+    \item Removal of AD1, AD2 (thresholds only).
     \item Describe AB1 (newly added).
     \item TE1, TE2 metrics are now calculated differently.
-    \item Discuss switch to \texttt{faro}.
+    \item Discuss switch to \texttt{faro}. (Include demonstration of \texttt{faro} parity with \texttt{validate\_drp} -- after demonstrating that, we proceeded to update algorithms in \texttt{faro}.
 \end{itemize}
 
 \section{Photometric Performance}\label{photometric-performance}
