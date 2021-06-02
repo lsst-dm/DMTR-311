@@ -58,7 +58,7 @@ For comparison, we provide the \SRD required ``design'' value of each metric as 
 %, and, where available, the target for this release as defined in the Data Management Development Milestone Roadmap \citedsp{LDM-240}. 
 For context, the \SRD does not place any constraints on \emph{y}-band for these Key Performance Metrics (KPMs).  For the photometric metrics, there are only specifications for \emph{g}, \emph{r}, and \emph{i}'. In the case of the ellipticity correlation metrics, there are specs only for \emph{r} and \emph{i}'. The \emph{y}-band measurements are of interest primarily for historical tracking.
 
-Some KPMs (e.g., PF1, AF1, AF2) involve thresholds that are different for ``design'', ``minimum'', and ``stretch'' specifications. The metrics in this report are all compared to the ``design'' thresholds. The assessment of these KPMs would be different if evaluated against different thresholds.
+Some KPMs (e.g., PF1, AF1, AF2) involve thresholds that are different for ``design'', ``minimum'', and ``stretch'' specifications. Metrics in this report are all compared to the ``design'' thresholds. The assessment of these KPMs would be different if evaluated against different thresholds.
 
 %The per-cycle target numbers come from the ``KPMs'' sheet of \href{http://ls.st/LDM-240}{LDM-240}.
 
@@ -66,10 +66,13 @@ Some KPMs (e.g., PF1, AF1, AF2) involve thresholds that are different for ``desi
 
 Since the previous (v21.0.0) Science Pipelines release, we have engaged in detailed review of the science quality metrics and algorithms to calculate them. In response to this review, we have updated some of the metric calculation algorithms to reflect our current understanding of their intent.
 
-PA1, PF1:
+The metric PA1 assesses the photometric repeatability. Its implementation in \texttt{validate\_drp} involved selecting pairs of visits for each object at random and calculating their magnitude difference. This was turned into a root mean square (RMS) about the (unknown) mean magnitude by dividing by $\sqrt2$, and then the interquartile range of these RMS magnitude differences was calculated. This process was repeated for 50 random shuffles, and the mean value of the interquartile range of RMS differences reported as the PA1 ``repeatability'' (in mmag). With larger datasets now available containing multiple visits in the same patch of sky, we have implemented a much simpler definition of photometric repeatability. Specifically, for all objects meeting the quality criteria for selection, the RMS of the magnitude measurements about the mean is calculated. The metric PA1 is simply the median value (in mmag) of this RMS value per tract. This conceptually simpler definition is more reflective of the SRD's intent, and will allow for extensions such as subtracting the expected contribution from statistical noise to isolate the systematic photometric repeatability floor. The magnitude differences used to calculate PA1 are also used to measure PF1, the percentage of measurements that deviate by more than some threshold (in mmag) from the mean.
 
-TE1, TE2:
+The metrics assessing ellipticity residuals (TE1 and TE2) have also been updated in response to our recent review. The previous implementation measured TE1 and TE2 from matched catalogs (i.e., sources matched between multiple visits), while the SRD definition specifies quantities that should be measured from objects in coadded images. We have rewritten the algorithm to calculate ellipticity residuals from coadd Objects rather than matched catalogs of sources. Another change we made was to calculate the average of the \textit{absolute value} of the correlation function instead of the straight average of the correlation function -- because the correlation function value can be negative, taking a mean value artificially skews the value toward zero, rather than reflecting the magnitude of the effect. Additional investigation of the proper set of sources to select for measuring ellipticity residuals is ongoing (e.g., Jira ticket DM-30256), as the current selection is likely including sources whose PSF flux has been altered by the deblending process. Thus the values of metrics TE1 and TE2 in the tables below are not fully reflective of the capabilities of the science pipelines.
 
+An additional metric reported here that has not been included in previous versions of this Report is AB1 -- the residuals from comparison of a source's measured position in any band other than $r$, as compared the the same source's position in $r$-band. The RMS of these offsets in milliarcseconds is AB1.
+
+Finally, we note the removal of some metrics that have been reported with previous Science Pipelines releases. Specifically, we no longer report PA2, AD1, and AD2, which are named quantities in the SRD that correspond to thresholds used in calculating related metrics (e.g., PA2 defines the threshold for outliers in measuring PF1), and not meant to define metrics themselves.
 
 \section{Summary of performance metrics}
 
@@ -80,15 +83,6 @@ Metrics are typically monitored on a dashboard hosted by SQuaSH (Science Quality
 %\caption{SQuaSH dashboard showing the past four months of metric measurements from the RC2 dataset. This view shows the metrics for tract 9813 in the HSC-R filter. The degraded performance in the photometry metrics after late June was due to the introduction of a new photometric calibration method known as FGCM, replacing jointcal. The metrics have continued to improve since the introduction of FGCM (but are still slightly worse than previous results using jointcal), as our understanding of FGCM's effects on the pipeline outputs evolves.}
 %\end{figure}
 
-Things to note:
-
-\begin{itemize}
-    \item Describe new algorithms for calculating PA1, PF1.
-    \item Removal of AD1, AD2 (thresholds only).
-    \item Describe AB1 (newly added).
-    \item TE1, TE2 metrics are now calculated differently.
-    \item Discuss switch to \texttt{faro}. (Include demonstration of \texttt{faro} parity with \texttt{validate\_drp} -- after demonstrating that, we proceeded to update algorithms in \texttt{faro}.
-\end{itemize}
 
 \section{Photometric Performance}\label{photometric-performance}
 
@@ -906,7 +900,7 @@ TE1: \emph{g}\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 \(1.4\times10^{-5}\) \strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-\(5.8\times10^{-3}\) \strut
+\(2.0\times10^{-4}\) \strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
 \strut
 \end{minipage}\tabularnewline
@@ -919,7 +913,7 @@ TE1: \emph{r}\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 \(2.0\times10^{-5}\)\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-\(1.1\times10^{-2}\)\strut
+\(6.0\times10^{-5}\)\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
 \strut
 \end{minipage}\tabularnewline
@@ -932,7 +926,7 @@ TE1: \emph{i}\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 \(1.1\times10^{-5}\)\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-\(2.5\times10^{-5}\)\strut
+\(7.8\times10^{-5}\)\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
 \strut
 \end{minipage}\tabularnewline
@@ -945,7 +939,7 @@ TE1: \emph{z}\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 \(1.6\times10^{-5}\) \strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-\(9.4\times10^{-3}\)\strut
+\(3.7\times10^{-5}\)\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
 \strut
 \end{minipage}\tabularnewline
@@ -958,7 +952,7 @@ TE1: \emph{y}\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 \(9.3\times10^{-6}\)\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-\(4.3\times10^{-3}\)\strut
+\(5.9\times10^{-5}\)\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
 \strut
 \end{minipage}\tabularnewline
@@ -984,7 +978,7 @@ TE2: \emph{g}\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 \(3.7\times10^{-7}\)\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-\(4.9\times10^{-3}\)\strut
+\(2.9\times10^{-6}\)\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
 \strut
 \end{minipage}\tabularnewline
@@ -997,7 +991,7 @@ TE2: \emph{r}\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 \(1.0\times10^{-6}\)\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-\(9.5\times10^{-3}\)\strut
+\(1.0\times10^{-6}\)\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
 \strut
 \end{minipage}\tabularnewline
@@ -1010,7 +1004,7 @@ TE2: \emph{i}\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 \(2.5\times10^{-6}\)\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-\(5.4\times10^{-6}\)\strut
+\(1.4\times10^{-6}\)\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
 \strut
 \end{minipage}\tabularnewline
@@ -1023,7 +1017,7 @@ TE2: \emph{z}\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 \(5.0\times10^{-7}\)\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-\(8.5\times10^{-3}\)\strut
+\(1.0\times10^{-6}\)\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
 \strut
 \end{minipage}\tabularnewline
@@ -1034,9 +1028,9 @@ TE2: \emph{y}\strut
 \end{minipage} & \begin{minipage}[t]{0.14\columnwidth}\raggedright\strut
 \(\leq 1\times10^{-7}\)\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-\(1,2\times10^{-6}\)\strut
+\(1.2\times10^{-6}\)\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-\(3.1\times10^{-3}\)\strut
+\(8.5\times10^{-7}\)\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
 \strut
 \end{minipage}\tabularnewline
