@@ -48,9 +48,11 @@ The report for the previous version can be found in \citedsp{DMTR-281}.
 
 \maketitle
 
-In this Report, we characterize the performance of the Rubin Observatory Science Pipelines Version 22.0.0. We illustrate the performance via metrics that are measured on the HSC-RC2 dataset. RC2 consists of 3 tracts of data taken from the HSC-SSP survey, and selected to provide a means of testing various ``pathological'' cases (e.g., difficult astrometric solutions, seeing too small to provide a well-sampled PSF, difficult fields for deblending, and large galaxies, among others). These three tracts each contain between 112--149 visits split between the HSC-G, HSC-R, HSC-I, HSC-Z, and HSC-Y (\emph{grizy}) filters. 
+In this Report, we characterize the performance of the Rubin Observatory Science Pipelines Version 22.0.0. We illustrate the performance via metrics that are measured on the HSC-RC2 dataset. RC2 consists of 3 tracts of data taken from the HSC-SSP survey, and selected to provide a means of testing various ``pathological'' cases (e.g., difficult astrometric solutions, extremely good seeing that does not provide a well-sampled PSF, difficult fields for deblending, and large galaxies, among others). These three tracts each contain between 112--149 visits split between the HSC-G, HSC-R, HSC-I, HSC-Z, and HSC-Y (\emph{grizy}) filters. 
 
-Beginning in March 2021, the metrics calculation package \texttt{validate\_drp} was deprecated and replaced with \texttt{faro}, a new package built to use the Gen3 butler, and that is part of the standard science pipeline builds. Henceforth \texttt{faro} will be the tool we use to measure data quality metrics for Rubin Observatory. Before adopting \texttt{faro}, detailed verification was performed to confirm that, given the same input datasets and configuration parameters, \texttt{faro} and \texttt{validate\_drp} produce identical results. Once this parity was demonstrated, \texttt{faro} was adopted and will now evolve (i.e., it will no longer be expected to produce identical results to those from \texttt{validate\_drp}).
+The data release production pipeline using Gen3 middleware for HSC was not fully featured for this release, so the metrics presented here were computed on a run that used the Gen2 middleware, which will be deprecated after this release.
+
+Beginning in March 2021, the metrics calculation package \texttt{validate\_drp} was deprecated and replaced with \texttt{faro}, a new package built to use the Gen3 butler, and that is part of the standard science pipeline builds. Henceforth \texttt{faro} will be the tool we use to measure data quality metrics for Rubin Observatory. Before adopting \texttt{faro}, detailed verification was performed to confirm that, given the same input datasets and configuration parameters, \texttt{faro} and \texttt{validate\_drp} produce identical results. Once this parity was demonstrated, \texttt{faro} was adopted and will now evolve (i.e., it will no longer be expected to produce identical results to those from \texttt{validate\_drp}). Nonetheless, many of the algorithms from \texttt{validate\_drp} were either ported directly to \texttt{faro} or have been modified slightly after porting. Our focus has now turned to implementing new metrics in \texttt{faro}.
 
 The metric calculation pipelines from \texttt{faro} were run on the RC2 tracts to derive the photometric, astrometric, and shape metrics that are reported here. We exclude the two astrometry metrics (AM3 and AF3) that concern residuals on 200-arcminute scales, since neither the handful of CCDs in the validation\_data\_hsc dataset nor the individual tracts of RC2 span large enough spatial scales to enable these measurements. 
 
@@ -89,11 +91,11 @@ Other than the changes in how metrics are calculated (i.e., new algorithms and t
 \section{Photometric Performance}\label{photometric-performance}
 
 These photometric performance
-metrics are defined in LSS-REQ-0093 (\citeds{LSE-29}) and Table 14 of \citeds{LPM-17}. \textit{Note that the change in values between pipelines releases 21 and 22 is due to adoption of a new algorithm for calculating the metrics, as outlined in Section~\ref{sec:new_algorithms}.}
+metrics are defined in LSS-REQ-0093 (\citeds{LSE-29}) and Table 14 of \citeds{LPM-17}. Values are presented for both the legacy \texttt{validate\_drp} calculations (for comparison to Version 21), and for the updated algorithms implemented in \texttt{faro}. The \texttt{validate\_drp} algorithms will be deprecated after this release. \textit{Note that the change in values between the \texttt{validate\_drp} and \texttt{faro} metrics is due to adoption of a new algorithm for calculating the metrics, as outlined in Section~\ref{sec:new_algorithms}.}
 
 Any entries left blank are those for which we do not have data in the given filter for that dataset.
 
-\begin{longtable}[]{@{}llllll@{}}
+\begin{longtable}[]{@{}lllllll@{}}
 \toprule
 \begin{minipage}[b]{0.12\columnwidth}\raggedright\strut
 Metric\strut
@@ -105,6 +107,8 @@ SRD Requirement -- Design\strut
 Release 21 Value (RC2) \strut
 \end{minipage} & \begin{minipage}[b]{0.12\columnwidth}\raggedright\strut
 Release 22 Value (RC2) \strut
+\end{minipage} & \begin{minipage}[b]{0.12\columnwidth}\raggedright\strut
+Release 22 Value (RC2-\texttt{faro}) \strut
 \end{minipage} & \begin{minipage}[b]{0.17\columnwidth}\raggedright\strut
 Comments\strut
 \end{minipage}\tabularnewline
@@ -135,6 +139,8 @@ mmag\strut
 ---\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 --- \strut
+\end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
+--- \strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
 No data\strut
 \end{minipage}\tabularnewline
@@ -146,6 +152,8 @@ mmag\strut
 \(\leq 5.0\)\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 13.8\strut
+\end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
+13.7 \strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 7.6 \strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
@@ -160,6 +168,8 @@ mmag\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 14.7\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
+14.4\strut
+\end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 8.5\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
 \strut
@@ -172,6 +182,8 @@ mmag\strut
 \(\leq 5.0\)\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 14.7\strut
+\end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
+14.5\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 9.2\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
@@ -186,6 +198,8 @@ mmag\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 11.8\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
+12.0\strut
+\end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 7.0\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
 \strut
@@ -199,6 +213,8 @@ mmag\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 14.3\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
+14.2\strut
+\end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 8.0\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
 \strut
@@ -209,6 +225,8 @@ PF1: \emph{u}\strut
 \%\strut
 \end{minipage} & \begin{minipage}[t]{0.14\columnwidth}\raggedright\strut
 \(\leq 20\)\strut
+\end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
+---\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 ---\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
@@ -225,6 +243,8 @@ PF1: \emph{g}\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 31.1\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
+30.4\strut
+\end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 12.0\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
 \strut
@@ -237,6 +257,8 @@ PF1: \emph{r}\strut
 \(\leq 10\)\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 33.0\strut
+\end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
+32.0\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 14.5\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
@@ -251,6 +273,8 @@ PF1: \emph{i}\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 33.7\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
+32.9\strut
+\end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 16.0\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
 \strut
@@ -264,6 +288,8 @@ PF1: \emph{z}\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 14.1\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
+14.0\strut
+\end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 8.7\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
 \strut
@@ -276,6 +302,8 @@ PF1: \emph{y}\strut
 \(\leq 10\)\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 17.6\strut
+\end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
+16.9\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 12.0\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
@@ -796,7 +824,7 @@ mas\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 ---\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-4.9\strut
+8.4\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
 \strut
 \end{minipage}\tabularnewline
@@ -809,7 +837,7 @@ mas\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 ---\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-5.4\strut
+4.6\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
 \strut
 \end{minipage}\tabularnewline
@@ -822,7 +850,7 @@ mas\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 ---\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-4.5\strut
+5.2\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
 \strut
 \end{minipage}\tabularnewline
@@ -835,7 +863,7 @@ mas\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 ---\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-5.1\strut
+4.4\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
 \strut
 \end{minipage}\tabularnewline
@@ -848,7 +876,7 @@ mas\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
 ---\strut
 \end{minipage} & \begin{minipage}[t]{0.12\columnwidth}\raggedright\strut
-6.5\strut
+6.1\strut
 \end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright\strut
 \strut
 \end{minipage}\tabularnewline
